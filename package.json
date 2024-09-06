@@ -7,5 +7,9 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@glimmer/env": "^0.1.7",
+    "@glimmer/validator": "^0.92.0"
+  }
 }
