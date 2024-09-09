@@ -1,1 +1,1 @@
-export * from './myModule.js';
+export * from './tracked.js'

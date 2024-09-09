@@ -1,0 +1,1 @@
+export declare function tracked(_target: any, key: any, desc: any): PropertyDecorator;
