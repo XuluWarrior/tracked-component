@@ -11,7 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "baseUrl": ".",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "allowJs": true
   },
   "include": [
     "src"
