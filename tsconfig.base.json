@@ -12,7 +12,8 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "rootDir": "./src",
-    "allowJs": true
+    "allowJs": true,
+    "experimentalDecorators": true
   },
   "include": [
     "src"
