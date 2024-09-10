@@ -28,6 +28,8 @@
   "devDependencies": {
     "@glimmer/env": "^0.1.7",
     "@glimmer/validator": "^0.92.0",
+    "@types/react": "^18.3.5",
+    "react": "^18.3.1",
     "rimraf": "^5.0.7",
     "typescript": "^5.5.2"
   }
