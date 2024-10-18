@@ -4,6 +4,7 @@ import { setPropertyDidChange, tracked } from './tracked.js';
 
 import {
   useEffect,
+  useRef,
   useState,
   PropsWithoutRef,
   ReactNode,
