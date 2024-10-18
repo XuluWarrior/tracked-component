@@ -14,7 +14,8 @@
     "baseUrl": ".",
     "rootDir": "./src",
     "allowJs": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "jsx": "react"
   },
   "include": [
     "src"

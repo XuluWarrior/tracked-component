@@ -27,12 +27,23 @@
   "author": "",
   "license": "MIT",
   "description": "",
-  "devDependencies": {
+  "dependencies": {
     "@glimmer/env": "^0.1.7",
     "@glimmer/validator": "^0.92.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@types/jest": "^29.5.13",
     "@types/react": "^18.3.5",
-    "react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-mock-console": "^2.0.0",
+    "react-test-renderer": "^18.3.1",
     "rimraf": "^5.0.7",
+    "ts-jest": "^29.2.5",
+    "tsc-watch": "^6.2.0",
     "typescript": "^5.5.2"
   }
 }
