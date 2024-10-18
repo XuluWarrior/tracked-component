@@ -105,3 +105,13 @@ export function trackedComponent(renderFn: (props: any) => ReactNode) {
     return ref.current!(...args);
   }
 }
+
+export function useTracking<T extends ReactNode>(fn: () => T) {
+  const ref = useRef<any>();
+  if (!ref.current) {
+    ref.current = trackedComponent(fn);
+  }
+  return ref.current!({});
+}
+
+export const Tracking = trackedComponent(({children}) => children?.() ?? null)
