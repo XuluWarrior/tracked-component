@@ -1,2 +1,3 @@
-export * from './actions.js'
-export * from './tracked.js'
+export * from './action'
+export * from './tracked'
+export * from './tracked-component'
