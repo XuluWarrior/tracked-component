@@ -1,3 +1,7 @@
+/**
+ * Source derived from https://github.com/glimmerjs/glimmer.js/blob/master/packages/%40glimmer/tracking/src/tracked.ts
+ */
+
 import { DEBUG } from '@glimmer/env';
 import { trackedData } from '@glimmer/validator';
 
