@@ -14,6 +14,8 @@
     "dist"
   ],
   "scripts": {
+    "watch:cjs": "tsc --watch -p tsconfig.cjs.json",
+    "watch:esm": "tsc-watch -p tsconfig.esm.json --onSuccess 'npm run rename:esm'",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json && npm run rename:esm",
     "build": "npm run build:cjs && npm run build:esm",
