@@ -81,3 +81,27 @@ export abstract class TrackedComponent {
     }
   }
 }
+
+class TrackedComponentFromFn extends TrackedComponent {
+  get displayName(): string {
+    return this.renderFn.name
+  }
+  constructor(readonly renderFn: (props: any) => ReactNode) {
+    super();
+  }
+
+  render(): ReactNode {
+    return this.renderFn(this.props)
+  }
+}
+
+export function trackedComponent(renderFn: (props: any) => ReactNode) {
+  return (...args: any[]) => {
+    const ref = useRef<any>();
+    if (!ref.current) {
+      const trackedComponent = new TrackedComponentFromFn(renderFn);
+      ref.current = trackedComponent.toComponentFn();
+    }
+    return ref.current!(...args);
+  }
+}
