@@ -5,6 +5,11 @@
 import { DEBUG } from '@glimmer/env';
 import { trackedData } from '@glimmer/validator';
 
+let propertyDidChange = function () { };
+export function setPropertyDidChange(cb: () => void) {
+    propertyDidChange = cb;
+}
+
 /**
  * @decorator
  *
@@ -145,6 +150,7 @@ function descriptorForField<T extends object, K extends keyof T>(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         set(this: T, newValue: any): void {
             setter(this, newValue);
+            propertyDidChange();
         },
     };
 }
