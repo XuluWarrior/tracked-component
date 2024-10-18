@@ -11,12 +11,20 @@ import {
 } from "react";
 
 
+const handlers = new Map<object, ()=>void>()
+
+setPropertyDidChange(() => {
+  for (const handler of [...handlers.values()]) {
+    handler();
+  }
+});
+
 export abstract class TrackedComponent {
   abstract render(): ReactNode
 
   onMount(): void { }
 
-  onDismount(): void { }
+  onDismount(): void { handlers.delete(this) }
 
   cache = createCache<ReactNode>(this.render.bind(this))
 
@@ -41,14 +49,15 @@ export abstract class TrackedComponent {
 
   toComponentFn() {
     return (props: any) => {
-      setPropertyDidChange(() => {});
-      this.props = props;
+      handlers.delete(this)
+      this.props = props
       const [state, rerender] = useState(0);
-      setPropertyDidChange(() => {
+      const handler = () => {
         if (!validateTag(this.tag, this.snapshot)) {
           rerender(state + 1)
         }
-      });
+      };
+      handlers.set(this, handler)
       useEffect(() => {
         this.onMount();
         return this.onDismount;
