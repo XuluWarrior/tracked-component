@@ -3,11 +3,14 @@
  */
 
 import { assert } from './debug';
-import type { ElementDescriptor, ExtendedMethodDecorator } from '@ember/-internals/metal';
-import {
-    isElementDescriptor,
-    setClassicDecorator,
-} from '@ember/-internals/metal';
+
+export type DecoratorPropertyDescriptor = (PropertyDescriptor & { initializer?: any }) | undefined;
+
+export type ElementDescriptor = [
+    target: object,
+    propertyName: string,
+    descriptor?: DecoratorPropertyDescriptor
+];
 
 /**
  Decorator that turns the target function into an Action which can be accessed
