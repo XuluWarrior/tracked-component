@@ -67,8 +67,10 @@ export function setPropertyDidChange(cb: () => void) {
  * ```
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const tracked: PropertyDecorator = (...args: any[]) => {
-    const [target, key, descriptor] = args;
+export function tracked<T extends object>(target: T, propertyKey: keyof T): void;
+export function tracked<T extends object>(target: T, propertyKey: keyof T, descriptor: PropertyDescriptor): PropertyDescriptor;
+export function tracked<T extends object>(...args: [target: T, propertyKey: keyof T, descriptor?: PropertyDescriptor]): PropertyDescriptor | void {
+    const [target, key, descriptor ] = args;
 
     // Error on `@tracked()`, `@tracked(...args)`, and `@tracked get propName()`
     if (DEBUG && typeof target === 'string') throwTrackedWithArgumentsError(args);
