@@ -4,6 +4,7 @@ import { setPropertyDidChange, tracked } from './tracked';
 
 import {
   useEffect,
+  useRef,
   useState,
   PropsWithoutRef,
   ReactNode,
@@ -58,7 +59,13 @@ export abstract class TrackedComponent {
   }
 
   static toComponentFn() {
-    const trackedComponent = new (this as any)
-    return trackedComponent.toComponentFn()
+    return (...args: any[]) => {
+      const ref = useRef<any>();
+      if (!ref.current) {
+        const trackedComponent = new (this as any)
+        ref.current = trackedComponent.toComponentFn();
+      }
+      return ref.current!(...args)
+    }
   }
 }
