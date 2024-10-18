@@ -140,42 +140,8 @@ export function action(
     target: ElementDescriptor[0],
     key: ElementDescriptor[1],
     desc: ElementDescriptor[2]
-): PropertyDescriptor;
-export function action(desc: PropertyDescriptor): ExtendedMethodDecorator;
-export function action(
-    ...args: ElementDescriptor | [PropertyDescriptor]
-): PropertyDescriptor | ExtendedMethodDecorator {
+): PropertyDescriptor {
     let actionFn: object | Function;
-
-    if (!isElementDescriptor(args)) {
-        actionFn = args[0];
-
-        let decorator: ExtendedMethodDecorator = function (
-            target,
-            key,
-            _desc,
-            _meta,
-            isClassicDecorator
-        ) {
-            assert(
-                'The @action decorator may only be passed a method when used in classic classes. You should decorate methods directly in native classes',
-                isClassicDecorator
-            );
-
-            assert(
-                'The action() decorator must be passed a method when used in classic classes',
-                typeof actionFn === 'function'
-            );
-
-            return setupAction(target, key, actionFn);
-        };
-
-        setClassicDecorator(decorator);
-
-        return decorator;
-    }
-
-    let [target, key, desc] = args;
 
     actionFn = desc?.value;
 
@@ -188,5 +154,3 @@ export function action(
     return setupAction(target, key, actionFn);
 }
 
-// SAFETY: TS types are weird with decorators. This should work.
-setClassicDecorator(action as ExtendedMethodDecorator);
