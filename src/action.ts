@@ -2,7 +2,7 @@
  * Derived from https://github.com/emberjs/ember.js/blob/main/packages/%40ember/object/index.ts
  */
 
-import { assert } from '@ember/debug';
+import { assert } from './debug';
 import type { ElementDescriptor, ExtendedMethodDecorator } from '@ember/-internals/metal';
 import {
     isElementDescriptor,
