@@ -1,6 +1,6 @@
 import { createCache, getValue, validateTag, Tag, Revision } from "@glimmer/validator";
 
-import {setPropertyDidChange} from './tracked.js';
+import {setPropertyDidChange} from './tracked';
 
 import {
   useEffect,
