@@ -1,6 +1,6 @@
 import { createCache, getValue, validateTag, Tag, Revision } from "@glimmer/validator";
 
-import { setPropertyDidChange, tracked } from './tracked';
+import {setPropertyDidChange} from './tracked';
 
 import {
   useEffect,
@@ -40,7 +40,10 @@ export abstract class TrackedComponent {
     return (this.cache as any)[this.snapshotSymbol] as Revision;
   }
 
-  @tracked
+  invalidateCache(): void {
+    (this.cache as any)[this.snapshotSymbol] = 0;
+  }
+
   props: PropsWithoutRef<unknown>
 
   get cachedRender(): ReactNode {
@@ -49,8 +52,8 @@ export abstract class TrackedComponent {
 
   toComponentFn() {
     return (props: any) => {
-      handlers.delete(this)
       this.props = props
+      this.invalidateCache()
       const [state, rerender] = useState(0);
       const handler = () => {
         if (!validateTag(this.tag, this.snapshot)) {
