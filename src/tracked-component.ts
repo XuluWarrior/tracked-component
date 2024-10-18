@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
   PropsWithoutRef,
-  ReactNode,
+  ReactNode, memo, createElement,
 } from "react";
 
 
@@ -51,7 +51,7 @@ export abstract class TrackedComponent {
   }
 
   toComponentFn() {
-    return (props: any) => {
+    return memo((props: any) => {
       this.props = props
       this.invalidateCache()
       const [state, rerender] = useState(0);
@@ -67,7 +67,7 @@ export abstract class TrackedComponent {
       }, [])
 
       return this.cachedRender
-    }
+    })
   }
 
   static toComponentFn() {
@@ -77,7 +77,7 @@ export abstract class TrackedComponent {
         const trackedComponent = new (this as any)
         ref.current = trackedComponent.toComponentFn();
       }
-      return ref.current!(...args)
+      return createElement(ref.current!, args[0])
     }
   }
 }
@@ -102,7 +102,7 @@ export function trackedComponent(renderFn: (props: any) => ReactNode) {
       const trackedComponent = new TrackedComponentFromFn(renderFn);
       ref.current = trackedComponent.toComponentFn();
     }
-    return ref.current!(...args);
+    return createElement(ref.current!, args[0])
   }
 }
 
