@@ -2,13 +2,14 @@ import * as mobx from "mobx"
 import * as React from "react"
 import { act, render } from "@testing-library/react"
 
+import {Box} from './utils'
 import {trackedComponent} from "../../src";
 
 test("mobx issue 50", done => {
     const foo = {
-        a: mobx.observable.box(true),
-        b: mobx.observable.box(false),
-        c: mobx.computed((): boolean => {
+        a: new Box(true),
+        b: new Box(false),
+        c: (): boolean => {
             // console.log("evaluate c")
             return foo.b.get()
         })
@@ -41,8 +42,8 @@ test("mobx issue 50", done => {
 })
 
 it("should respect transaction", async () => {
-    const a = mobx.observable.box(2)
-    const loaded = mobx.observable.box(false)
+    const a = new Box(2)
+    const loaded = new Box(false)
     const valuesSeen = [] as number[]
 
     const Component = trackedComponent(() => {
