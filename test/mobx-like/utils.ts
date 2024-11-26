@@ -1,9 +1,3 @@
-import { configure } from "mobx"
-
-export function resetMobx(): void {
-    configure({ enforceActions: "never" })
-}
-
 import {trackable} from "../../src";
 
 export function enableDevEnvironment() {
