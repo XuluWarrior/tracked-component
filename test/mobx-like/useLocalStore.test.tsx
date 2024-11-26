@@ -251,7 +251,9 @@ describe("is used to keep observable within component body", () => {
                     }
                 }))
                 useEffect(() => {
-                    store.multiplier = multiplier
+                    if (store.multiplier !== multiplier) {
+                        store.multiplier = multiplier
+                    }
                 }, [multiplier])
 
                 return useTracking(
@@ -319,7 +321,9 @@ describe("is used to keep observable within component body", () => {
                     }
                 }))
                 useEffect(() => {
-                    store.multiplier = multiplier
+                    if (store.multiplier != multiplier) {
+                        store.multiplier = multiplier
+                    }
                 }, [multiplier])
 
                 return (
@@ -388,7 +392,9 @@ describe("is used to keep observable within component body", () => {
                     }
                 }))
                 useEffect(() => {
-                    store.multiplier = multiplier
+                    if (store.multiplier !== multiplier) {
+                        store.multiplier = multiplier
+                    }
                 }, [multiplier])
                 return (
                     <div>
