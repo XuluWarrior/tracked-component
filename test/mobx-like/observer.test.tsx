@@ -586,24 +586,15 @@ test("parent / childs render in the right order", done => {
     const events: string[] = []
 
     class User {
+        @tracked
         public name = "User's name"
-        constructor() {
-            mobx.makeObservable(this, {
-                name: mobx.observable
-            })
-        }
     }
 
     class Store {
+        @tracked
         public user: User | null = new User()
         public logout() {
             this.user = null
-        }
-        constructor() {
-            mobx.makeObservable(this, {
-                user: mobx.observable,
-                logout: mobx.action
-            })
         }
     }
 
