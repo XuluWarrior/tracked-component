@@ -426,7 +426,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
 
     describe("error handling", () => {
         test("errors should propagate", () => {
-            const x = trackable({ val: 1 })
+            const x = mobx.observable.box(1)
             const errorsSeen: any[] = []
 
             class ErrorBoundary extends React.Component {
@@ -451,10 +451,10 @@ function runTestSuite(mode: "observer" | "useObserver") {
             }
 
             const C = obsComponent(() => {
-                if (x.get() === 42) {
+                if (x.val === 42) {
                     throw new Error("The meaning of life!")
                 }
-                return <span>{x.get()}</span>
+                return <span>{x.val}</span>
             })
 
             const restoreConsole = mockConsole()
