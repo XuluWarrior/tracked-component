@@ -34,7 +34,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
                     trackable({
                         completed: false,
                         title: "a"
-                    }
+                    })
                 ]
             })
 
