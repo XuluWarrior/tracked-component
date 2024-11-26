@@ -37,7 +37,7 @@ describe("regions should rerender component", () => {
 
 it("renders null if no children/render prop is supplied a function", () => {
     const restoreConsole = mockConsole()
-    const Comp = () => <Observer />
+    const Comp = () => <Tracking />
     const { container } = render(<Comp />)
     expect(container).toMatchInlineSnapshot(`<div />`)
     restoreConsole()
@@ -45,7 +45,7 @@ it("renders null if no children/render prop is supplied a function", () => {
 
 it("prop types checks for children/render usage", () => {
     const Comp = () => (
-        <Observer render={() => <span>children</span>}>{() => <span>children</span>}</Observer>
+        <Tracking render={() => <span>children</span>}>{() => <span>children</span>}</Tracking>
     )
     const restoreConsole = mockConsole()
     render(<Comp />)

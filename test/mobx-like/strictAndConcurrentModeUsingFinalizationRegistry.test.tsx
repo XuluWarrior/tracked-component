@@ -2,7 +2,7 @@ import { cleanup, render } from "@testing-library/react"
 import * as mobx from "mobx"
 import * as React from "react"
 
-import { useObserver } from "../src/useObserver"
+import {trackable, useTracking} from "../../src";
 import { sleep } from "./utils"
 import { FinalizationRegistry } from "../src/utils/FinalizationRegistryWrapper"
 
@@ -16,7 +16,7 @@ test("uncommitted components should not leak observations", async () => {
         throw new Error("This test must run with node >= 14")
     }
 
-    const store = mobx.observable({ count1: 0, count2: 0 })
+    const store = trackable({ count1: 0, count2: 0 })
 
     // Track whether counts are observed
     let count1IsObserved = false
@@ -26,8 +26,8 @@ test("uncommitted components should not leak observations", async () => {
     mobx.onBecomeObserved(store, "count2", () => (count2IsObserved = true))
     mobx.onBecomeUnobserved(store, "count2", () => (count2IsObserved = false))
 
-    const TestComponent1 = () => useObserver(() => <div>{store.count1}</div>)
-    const TestComponent2 = () => useObserver(() => <div>{store.count2}</div>)
+    const TestComponent1 = () => useTracking(() => <div>{store.count1}</div>)
+    const TestComponent2 = () => useTracking(() => <div>{store.count2}</div>)
 
     // Render, then remove only #2
     const rendering = render(
