@@ -1,6 +1,5 @@
 import { act, cleanup, fireEvent, render } from "@testing-library/react"
 import mockConsole from "jest-mock-console"
-import * as mobx from "mobx"
 import React from "react"
 
 import { trackable, useTracking, trackedComponent, tracked } from '../../src/index'

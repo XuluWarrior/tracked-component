@@ -1,6 +1,5 @@
 import "./killFinalizationRegistry"
 import { act, cleanup, render } from "@testing-library/react"
-import * as mobx from "mobx"
 import * as React from "react"
 import ReactDOM from "react-dom"
 
