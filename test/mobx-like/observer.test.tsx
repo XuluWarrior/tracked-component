@@ -4,6 +4,7 @@ import * as mobx from "mobx"
 import React from "react"
 
 import { trackable, useTracking, trackedComponent, tracked } from '../../src/index'
+import {Box} from './utils'
 
 const getDNode = (obj: any, prop?: string) => mobx.getObserverTree(obj, prop)
 
@@ -426,7 +427,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
 
     describe("error handling", () => {
         test("errors should propagate", () => {
-            const x = mobx.observable.box(1)
+            const x = new Box(1)
             const errorsSeen: any[] = []
 
             class ErrorBoundary extends React.Component {
