@@ -3,7 +3,7 @@ import mockConsole from "jest-mock-console"
 import * as mobx from "mobx"
 import React from "react"
 
-import { observer, useObserver, isObserverBatched, enableStaticRendering } from "../src"
+import { trackable, useTracking, trackedComponent, tracked } from '../../src/index'
 
 const getDNode = (obj: any, prop?: string) => mobx.getObserverTree(obj, prop)
 
@@ -15,10 +15,10 @@ function runTestSuite(mode: "observer" | "useObserver") {
         forceMemo = false
     ) {
         if (mode === "observer") {
-            return observer(component)
+            return trackedComponent(component)
         } else {
             const c = (props: P) => {
-                return useObserver(() => {
+                return useTracking(() => {
                     return component(props)
                 })
             }
@@ -29,9 +29,9 @@ function runTestSuite(mode: "observer" | "useObserver") {
     describe(`nestedRendering - ${mode}`, () => {
         const execute = () => {
             // init element
-            const store = mobx.observable({
+            const store = trackable({
                 todos: [
-                    {
+                    trackable({
                         completed: false,
                         title: "a"
                     }
@@ -87,7 +87,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
         test("rerendering with outer store added", () => {
             const { store, container, getAllByText, renderings } = execute()
             act(() => {
-                store.todos.push({
+                store.todos.push(trackable({
                     completed: true,
                     title: "b"
                 })
@@ -116,7 +116,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
     })
 
     describe("isObjectShallowModified detects when React will update the component", () => {
-        const store = mobx.observable({ count: 0 })
+        const store = trackable({count: 0})
         let counterRenderings = 0
         const Counter = obsComponent(function TodoItem() {
             counterRenderings++
@@ -175,7 +175,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
         const execute = () => {
             enableStaticRendering(true)
             let renderCount = 0
-            const data = mobx.observable({
+            const data = trackable({
                 z: "hi"
             })
 
@@ -210,7 +210,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
 
     describe("issue 12", () => {
         const createData = () =>
-            mobx.observable({
+            trackable({
                 selected: "coffee",
                 items: [
                     {
@@ -334,7 +334,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
         const execute = () => {
             let renderCount = 0
             const createProps = () => {
-                const odata = mobx.observable({ x: 1 })
+                const odata = trackable({ x: 1 })
                 const data = { y: 1 }
                 function doStuff() {
                     data.y++
@@ -391,7 +391,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
                 parent: 0
             }
             const data = { x: 1 }
-            const odata = mobx.observable({ y: 1 })
+            const odata = trackable({ y: 1 })
 
             const Child = obsComponent((props: any) => {
                 renderings.child++
@@ -426,7 +426,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
 
     describe("error handling", () => {
         test("errors should propagate", () => {
-            const x = mobx.observable.box(1)
+            const x = trackable({ val: 1 })
             const errorsSeen: any[] = []
 
             class ErrorBoundary extends React.Component {
@@ -534,7 +534,7 @@ test("useImperativeHandle and forwardRef should work with useObserver", () => {
                 }),
                 []
             )
-            return useObserver(() => {
+            return useTracking(() => {
                 return <input ref={inputRef} defaultValue={props.value} />
             })
         })
@@ -562,7 +562,7 @@ it("should hoist known statics only", () => {
     MyHipsterComponent.compare = "Nope!"
     MyHipsterComponent.render = "Nope!"
 
-    const wrapped = observer(MyHipsterComponent)
+    const wrapped = trackedComponent(MyHipsterComponent)
     expect(wrapped.displayName).toBe("MyHipsterComponent")
     expect(wrapped.randomStaticThing).toEqual(3)
     expect(wrapped.defaultProps).toEqual({ x: 3 })
@@ -573,7 +573,7 @@ it("should hoist known statics only", () => {
 })
 
 it("should have the correct displayName", () => {
-    const TestComponent = observer(function MyComponent() {
+    const TestComponent = trackedComponent(function MyComponent() {
         return null
     })
 
@@ -617,7 +617,7 @@ test("parent / childs render in the right order", done => {
         }
     }
 
-    const Parent = observer(() => {
+    const Parent = trackedComponent(() => {
         events.push("parent")
         if (!store.user) {
             return <span>Not logged in.</span>
@@ -630,7 +630,7 @@ test("parent / childs render in the right order", done => {
         )
     })
 
-    const Child = observer(() => {
+    const Child = trackedComponent(() => {
         events.push("child")
         if (!store.user) {
             return null
@@ -704,7 +704,7 @@ it("should preserve generic parameters", () => {
         value: T
         callback: (value: T) => void
     }
-    const TestComponent = observer(<T extends unknown>(props: ITestComponentProps<T>) => {
+    const TestComponent = trackedComponent(<T extends unknown>(props: ITestComponentProps<T>) => {
         return null
     })
 
@@ -768,7 +768,7 @@ it("should keep original props types", () => {
         return null
     }
 
-    const ObserverTestComponent = observer(TestComponent)
+    const ObserverTestComponent = trackedComponent(TestComponent)
 
     const element = React.createElement(ObserverTestComponent, { a: 1 })
     render(element)

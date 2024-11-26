@@ -4,14 +4,14 @@ import * as mobx from "mobx"
 import * as React from "react"
 import ReactDOM from "react-dom"
 
-import { useObserver } from "../src/useObserver"
+import { useTracking, trackable } from "../../src"
 
 afterEach(cleanup)
 
 test("uncommitted observing components should not attempt state changes", () => {
-    const store = mobx.observable({ count: 0 })
+    const store = trackable({ count: 0 })
 
-    const TestComponent = () => useObserver(() => <div>{store.count}</div>)
+    const TestComponent = () => useTracking(() => <div>{store.count}</div>)
 
     // Render our observing component wrapped in StrictMode
     const rendering = render(
@@ -47,9 +47,9 @@ strictModeValues.forEach(strictMode => {
     const modeName = strictMode ? "StrictMode" : "non-StrictMode"
 
     test(`observable changes before first commit are not lost (${modeName})`, () => {
-        const store = mobx.observable({ value: "initial" })
+        const store = trackable({ value: "initial" })
 
-        const TestComponent = () => useObserver(() => <div>{store.value}</div>)
+        const TestComponent = () => useTracking(() => <div>{store.value}</div>)
 
         // Render our observing component wrapped in StrictMode, but using
         // raw ReactDOM.render (not react-testing-library render) because we

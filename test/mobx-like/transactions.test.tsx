@@ -2,7 +2,7 @@ import * as mobx from "mobx"
 import * as React from "react"
 import { act, render } from "@testing-library/react"
 
-import { observer } from "../src"
+import {trackedComponent} from "../../src";
 
 test("mobx issue 50", done => {
     const foo = {
@@ -22,7 +22,7 @@ test("mobx issue 50", done => {
     let asText = ""
     let willReactCount = 0
     mobx.autorun(() => (asText = [foo.a.get(), foo.b.get(), foo.c.get()].join(":")))
-    const Test = observer(() => {
+    const Test = trackedComponent(() => {
         willReactCount++
         return <div id="x">{[foo.a.get(), foo.b.get(), foo.c.get()].join(",")}</div>
     })
@@ -45,7 +45,7 @@ it("should respect transaction", async () => {
     const loaded = mobx.observable.box(false)
     const valuesSeen = [] as number[]
 
-    const Component = observer(() => {
+    const Component = trackedComponent(() => {
         valuesSeen.push(a.get())
         if (loaded.get()) {
             return <div>{a.get()}</div>
