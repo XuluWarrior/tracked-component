@@ -4,12 +4,13 @@ import * as React from "react"
 import { act, cleanup, render } from "@testing-library/react"
 
 import {Tracking} from "../../src"
+import {Box} from './utils'
 
 afterEach(cleanup)
 
 describe("regions should rerender component", () => {
     const execute = () => {
-        const data = mobx.observable.box("hi")
+        const data = new Box("hi")
         const Comp = () => (
             <div>
                 <Tracking>{() => <span>{data.get()}</span>}</Tracking>
