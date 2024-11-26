@@ -310,7 +310,7 @@ describe("is used to keep observable within component body", () => {
             function Counter({ multiplier }: { multiplier: number }) {
                 counterRender++
 
-                const store = useLocalObservable(() => ({
+                const store = useLocalTrackable(() => ({
                     multiplier,
                     count: 10,
                     get multiplied() {
