@@ -451,10 +451,10 @@ function runTestSuite(mode: "observer" | "useObserver") {
             }
 
             const C = obsComponent(() => {
-                if (x.val === 42) {
+                if (x.get() === 42) {
                     throw new Error("The meaning of life!")
                 }
-                return <span>{x.val}</span>
+                return <span>{x.get()}</span>
             })
 
             const restoreConsole = mockConsole()
