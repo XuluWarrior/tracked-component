@@ -1,4 +1,3 @@
-import * as mobx from "mobx"
 import * as React from "react"
 import { act, render } from "@testing-library/react"
 
