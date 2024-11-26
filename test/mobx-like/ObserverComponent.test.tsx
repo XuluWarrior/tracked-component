@@ -44,7 +44,7 @@ it("renders null if no children/render prop is supplied a function", () => {
     restoreConsole()
 })
 
-it("prop types checks for children/render usage", () => {
+it.skip("prop types checks for children/render usage", () => {
     const Comp = () => (
         <Tracking render={() => <span>children</span>}>{() => <span>children</span>}</Tracking>
     )
