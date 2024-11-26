@@ -135,7 +135,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
 
     describe("keep views alive", () => {
         const execute = () => {
-            const data = mobx.observable({
+            const data = trackable({
                 x: 3,
                 yCalcCount: 0,
                 get y() {
