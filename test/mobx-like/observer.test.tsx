@@ -136,11 +136,11 @@ function runTestSuite(mode: "observer" | "useObserver") {
 
     describe("keep views alive", () => {
         const execute = () => {
+            let yCalcCount = 0
             const data = trackable({
                 x: 3,
-                yCalcCount: 0,
                 get y() {
-                    this.yCalcCount++
+                    yCalcCount++
                     return this.x * 2
                 },
                 z: "hi"
@@ -153,21 +153,21 @@ function runTestSuite(mode: "observer" | "useObserver") {
                     </div>
                 )
             })
-            return { ...render(<TestComponent />), data }
+            return {...render(<TestComponent/>), data, yCalcCount}
         }
 
         test("init state", () => {
-            const { data, queryByText } = execute()
-            expect(data.yCalcCount).toBe(1)
+            const {data, queryByText, yCalcCount} = execute()
+            expect(yCalcCount).toBe(1)
             expect(queryByText("hi6")).toBeTruthy()
         })
 
         test("rerender should not need a recomputation of data.y", () => {
-            const { data, queryByText } = execute()
+            const {data, queryByText, yCalcCount} = execute()
             act(() => {
                 data.z = "hello"
             })
-            expect(data.yCalcCount).toBe(1)
+            expect(yCalcCount).toBe(1)
             expect(queryByText("hello6")).toBeTruthy()
         })
     })
