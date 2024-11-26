@@ -90,7 +90,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
                 store.todos.push(trackable({
                     completed: true,
                     title: "b"
-                })
+                }))
             })
             expect(container.querySelectorAll("li").length).toBe(2)
             expect(getAllByText("2")).toHaveLength(1)
