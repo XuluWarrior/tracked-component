@@ -47,14 +47,14 @@ test("base useLocalStore should work", () => {
         container.querySelector("button")!.click()
     })
     expect(container.querySelector("span")!.innerHTML).toBe("1")
-    expect(counterRender).toBe(2)
+    expect(counterRender).toBe(1)
     expect(observerRender).toBe(2)
 
     act(() => {
         outerStoreRef.count++
     })
     expect(container.querySelector("span")!.innerHTML).toBe("2")
-    expect(counterRender).toBe(3)
+    expect(counterRender).toBe(1)
     expect(observerRender).toBe(3)
 
     act(() => {
@@ -62,7 +62,7 @@ test("base useLocalStore should work", () => {
     })
     // No re-render!
     expect(container.querySelector("span")!.innerHTML).toBe("2")
-    expect(counterRender).toBe(3)
+    expect(counterRender).toBe(1)
     expect(observerRender).toBe(3)
 })
 
@@ -290,15 +290,15 @@ describe("is used to keep observable within component body", () => {
                 ;(container.querySelector("#inc")! as any).click()
             })
             expect(container.querySelector("span")!.innerHTML).toBe("11")
-            expect(counterRender).toBe(2) // 1 would be better!
+            expect(counterRender).toBe(1) // 1 would be better!
             expect(observerRender).toBe(2)
 
             act(() => {
                 ;(container.querySelector("#incmultiplier")! as any).click()
             })
             expect(container.querySelector("span")!.innerHTML).toBe("22")
-            expect(counterRender).toBe(4) // TODO: avoid double rendering here!
-            expect(observerRender).toBe(4) // TODO: avoid double rendering here!
+            expect(counterRender).toBe(2)
+            expect(observerRender).toBe(3)
         })
 
         it("with <Observer>", () => {
@@ -368,7 +368,7 @@ describe("is used to keep observable within component body", () => {
             })
             expect(container.querySelector("span")!.innerHTML).toBe("22")
             expect(counterRender).toBe(2)
-            expect(observerRender).toBe(4)
+            expect(observerRender).toBe(3)
         })
 
         it("with observer()", () => {
