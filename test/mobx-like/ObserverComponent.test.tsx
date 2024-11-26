@@ -3,7 +3,7 @@ import * as mobx from "mobx"
 import * as React from "react"
 import { act, cleanup, render } from "@testing-library/react"
 
-import { Observer } from "../src"
+import {Tracking} from "../../src"
 
 afterEach(cleanup)
 
@@ -12,7 +12,7 @@ describe("regions should rerender component", () => {
         const data = mobx.observable.box("hi")
         const Comp = () => (
             <div>
-                <Observer>{() => <span>{data.get()}</span>}</Observer>
+                <Tracking>{() => <span>{data.get()}</span>}</Tracking>
                 <li>{data.get()}</li>
             </div>
         )
