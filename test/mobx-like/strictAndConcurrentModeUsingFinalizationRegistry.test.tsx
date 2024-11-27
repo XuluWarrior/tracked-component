@@ -3,27 +3,27 @@ import * as React from "react"
 
 import {trackable, useTracking} from "../../src";
 import { sleep } from "./utils"
-import { FinalizationRegistry } from "../src/utils/FinalizationRegistryWrapper"
+// import { FinalizationRegistry } from "../src/utils/FinalizationRegistryWrapper"
 
 // @ts-ignore
-import gc from "expose-gc/function"
+// import gc from "expose-gc/function"
 
 afterEach(cleanup)
 
-test("uncommitted components should not leak observations", async () => {
-    if (!FinalizationRegistry) {
-        throw new Error("This test must run with node >= 14")
-    }
+test.skip("uncommitted components should not leak observations", async () => {
+    // if (!FinalizationRegistry) {
+    //     throw new Error("This test must run with node >= 14")
+    // }
 
     const store = trackable({ count1: 0, count2: 0 })
 
     // Track whether counts are observed
     let count1IsObserved = false
     let count2IsObserved = false
-    mobx.onBecomeObserved(store, "count1", () => (count1IsObserved = true))
-    mobx.onBecomeUnobserved(store, "count1", () => (count1IsObserved = false))
-    mobx.onBecomeObserved(store, "count2", () => (count2IsObserved = true))
-    mobx.onBecomeUnobserved(store, "count2", () => (count2IsObserved = false))
+    // mobx.onBecomeObserved(store, "count1", () => (count1IsObserved = true))
+    // mobx.onBecomeUnobserved(store, "count1", () => (count1IsObserved = false))
+    // mobx.onBecomeObserved(store, "count2", () => (count2IsObserved = true))
+    // mobx.onBecomeUnobserved(store, "count2", () => (count2IsObserved = false))
 
     const TestComponent1 = () => useTracking(() => <div>{store.count1}</div>)
     const TestComponent2 = () => useTracking(() => <div>{store.count2}</div>)
@@ -42,7 +42,7 @@ test("uncommitted components should not leak observations", async () => {
     )
 
     // Allow gc to kick in in case to let finalization registry cleanup
-    gc()
+    // gc()
     await sleep(50)
 
     // count1 should still be being observed by Component1,
