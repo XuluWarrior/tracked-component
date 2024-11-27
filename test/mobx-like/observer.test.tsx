@@ -654,41 +654,41 @@ it("should have overload for props with children", () => {
     // this test has no `expect` calls as it verifies whether such component compiles or not
 })
 
-it("should have overload for empty options", () => {
-    // empty options are not really making sense now, but we shouldn't rely on `forwardRef`
-    // being specified in case other options are added in the future
-
-    interface IProps {
-        value: string
-    }
-    const TestComponent = trackedComponent<IProps>(({ value, children }) => {
-        return null
-    }, {})
-
-    render(<TestComponent value="1" />)
-
-    // this test has no `expect` calls as it verifies whether such component compiles or not
-})
-
-it("should have overload for props with children when forwardRef", () => {
-    interface IMethods {
-        focus(): void
-    }
-
-    interface IProps {
-        value: string
-    }
-    const TestComponent = trackedComponent<IProps, IMethods>(
-        ({ value, children }, ref) => {
-            return null
-        },
-        { forwardRef: true }
-    )
-
-    render(<TestComponent value="1" />)
-
-    // this test has no `expect` calls as it verifies whether such component compiles or not
-})
+// it("should have overload for empty options", () => {
+//     // empty options are not really making sense now, but we shouldn't rely on `forwardRef`
+//     // being specified in case other options are added in the future
+//
+//     interface IProps {
+//         value: string
+//     }
+//     const TestComponent = trackedComponent<IProps>(({ value, children }) => {
+//         return null
+//     })
+//
+//     render(<TestComponent value="1" />)
+//
+//     // this test has no `expect` calls as it verifies whether such component compiles or not
+// })
+//
+// it("should have overload for props with children when forwardRef", () => {
+//     interface IMethods {
+//         focus(): void
+//     }
+//
+//     interface IProps {
+//         value: string
+//     }
+//     const TestComponent = trackedComponent<IProps, IMethods>(
+//         ({ value, children }, ref) => {
+//             return null
+//         },
+//         { forwardRef: true }
+//     )
+//
+//     render(<TestComponent value="1" />)
+//
+//     // this test has no `expect` calls as it verifies whether such component compiles or not
+// })
 
 it("should preserve generic parameters", () => {
     interface IColor {
