@@ -30,6 +30,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
         const execute = () => {
             // init element
             const store = trackable({
+                // TODO: Implement tracked array
                 todos: [
                     trackable({
                         completed: false,
@@ -91,6 +92,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
                     completed: true,
                     title: "b"
                 }))
+                store.todos = store.todos // Workaround for missing tracked array
             })
             expect(container.querySelectorAll("li").length).toBe(2)
             expect(getAllByText("2")).toHaveLength(1)
@@ -106,6 +108,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
             let oldTodo
             act(() => {
                 oldTodo = store.todos.pop()
+                store.todos = store.todos // Workaround for missing tracked array
             })
             expect(renderings.list).toBe(2)
             expect(renderings.item).toBe(1)
