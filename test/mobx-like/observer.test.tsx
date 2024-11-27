@@ -432,7 +432,7 @@ function runTestSuite(mode: "observer" | "useObserver") {
             const x = new Box(1)
             const errorsSeen: any[] = []
 
-            class ErrorBoundary extends React.Component {
+            class ErrorBoundary extends React.Component<React.PropsWithChildren, {hasError: boolean}> {
                 public static getDerivedStateFromError() {
                     return { hasError: true }
                 }
