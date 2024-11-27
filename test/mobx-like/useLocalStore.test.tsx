@@ -213,8 +213,8 @@ describe("is used to keep observable within component body", () => {
     })
 
     it("Map can used instead of object", () => {
-        const TestComponent = observer(() => {
-            const map = useLocalObservable(() => new Map([["initial", 10]]))
+        const TestComponent = trackedComponent(() => {
+            const map = useLocalTrackable(() => new Map([["initial", 10]]))
             return (
                 <div onClick={() => map.set("later", 20)}>
                     {Array.from(map).map(([key, value]) => (
