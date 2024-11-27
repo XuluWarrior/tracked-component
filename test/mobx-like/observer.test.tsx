@@ -645,7 +645,7 @@ it("should have overload for props with children", () => {
     interface IProps {
         value: string
     }
-    const TestComponent = observer<IProps>(({ value, children }) => {
+    const TestComponent = trackedComponent<IProps>(({ value, children }) => {
         return null
     })
 
@@ -661,7 +661,7 @@ it("should have overload for empty options", () => {
     interface IProps {
         value: string
     }
-    const TestComponent = observer<IProps>(({ value, children }) => {
+    const TestComponent = trackedComponent<IProps>(({ value, children }) => {
         return null
     }, {})
 
@@ -678,7 +678,7 @@ it("should have overload for props with children when forwardRef", () => {
     interface IProps {
         value: string
     }
-    const TestComponent = observer<IProps, IMethods>(
+    const TestComponent = trackedComponent<IProps, IMethods>(
         ({ value, children }, ref) => {
             return null
         },
