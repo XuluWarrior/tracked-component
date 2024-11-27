@@ -14,17 +14,17 @@ test("mobx issue 50", done => {
         }
     }
     function flipStuff() {
-        mobx.transaction(() => {
-            foo.a.set(!foo.a.get())
-            foo.b.set(!foo.b.get())
-        })
+        // mobx.transaction(() => {
+        foo.a.set(!foo.a.get())
+        foo.b.set(!foo.b.get())
+        // })
     }
     let asText = ""
     let willReactCount = 0
     mobx.autorun(() => (asText = [foo.a.get(), foo.b.get(), foo.c.get()].join(":")))
     const Test = trackedComponent(() => {
         willReactCount++
-        return <div id="x">{[foo.a.get(), foo.b.get(), foo.c.get()].join(",")}</div>
+        return <div id="x">{[foo.a.get(), foo.b.get(), foo.c()].join(",")}</div>
     })
 
     render(<Test />)
