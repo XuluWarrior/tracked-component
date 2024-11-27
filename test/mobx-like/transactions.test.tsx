@@ -12,7 +12,7 @@ test("mobx issue 50", done => {
         c: (): boolean => {
             // console.log("evaluate c")
             return foo.b.get()
-        })
+        }
     }
     function flipStuff() {
         mobx.transaction(() => {
