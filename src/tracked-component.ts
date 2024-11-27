@@ -72,12 +72,9 @@ export abstract class TrackedComponent {
 
   static toComponentFn() {
     return (...args: any[]) => {
-      const ref = useRef<any>();
-      if (!ref.current) {
-        const trackedComponent = new (this as any)
-        ref.current = trackedComponent.toComponentFn();
-      }
-      return createElement(ref.current!, args[0])
+      const ref = useRef((new (this as any)).toComponentFn());
+
+      return createElement(ref.current, args[0])
     }
   }
 }
@@ -97,20 +94,15 @@ class TrackedComponentFromFn extends TrackedComponent {
 
 export function trackedComponent(renderFn: (props: any) => ReactNode) {
   return (...args: any[]) => {
-    const ref = useRef<any>();
-    if (!ref.current) {
-      const trackedComponent = new TrackedComponentFromFn(renderFn);
-      ref.current = trackedComponent.toComponentFn();
-    }
-    return createElement(ref.current!, args[0])
+    const ref = useRef(new TrackedComponentFromFn(renderFn).toComponentFn());
+
+    return createElement(ref.current, args[0])
   }
 }
 
 export function useTracking<T extends ReactNode>(fn: () => T) {
-  const ref = useRef<any>();
-  if (!ref.current) {
-    ref.current = trackedComponent(fn);
-  }
+  const ref = useRef(trackedComponent(fn));
+
   return ref.current!({});
 }
 
