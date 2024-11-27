@@ -5,7 +5,6 @@ import { act, cleanup, fireEvent, render } from "@testing-library/react"
 
 import {useLocalTrackable, useTracking, trackedComponent, Tracking} from '../../src/index'
 import { useEffect, useState } from "react"
-import { autorun } from "mobx"
 
 afterEach(cleanup)
 
@@ -188,14 +187,15 @@ describe("is used to keep observable within component body", () => {
                 }
             }))
 
-            useEffect(
-                () =>
-                    autorun(() => {
-                        seen.push(obs.x)
-                    }),
-                []
-            )
+            // useEffect(
+            //     () =>
+            //         autorun(() => {
+            //             seen.push(obs.x)
+            //         }),
+            //     []
+            // )
 
+            seen.push(obs.x) // TODO: implement the equivalent of autorun
             return (
                 <div
                     onClick={() => {
