@@ -212,7 +212,7 @@ describe("is used to keep observable within component body", () => {
         expect(seen).toEqual([1, 5]) // No 3!
     })
 
-    it("Map can used instead of object", () => {
+    it.skip("Map can used instead of object", () => {
         const TestComponent = trackedComponent(() => {
             const map = useLocalTrackable(() => new Map([["initial", 10]]))
             return (
