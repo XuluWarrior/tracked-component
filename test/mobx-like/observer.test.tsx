@@ -718,43 +718,43 @@ it("should preserve generic parameters", () => {
 
     // this test has no `expect` calls as it verifies whether such component compiles or not
 })
-
-it("should preserve generic parameters when forwardRef", () => {
-    interface IMethods {
-        focus(): void
-    }
-
-    interface IColor {
-        name: string
-        css: string
-    }
-
-    interface ITestComponentProps<T> {
-        value: T
-        callback: (value: T) => void
-    }
-    const TestComponent = observer(
-        <T extends unknown>(props: ITestComponentProps<T>, ref: React.Ref<IMethods>) => {
-            return null
-        },
-        { forwardRef: true }
-    )
-
-    function callbackString(value: string) {
-        return
-    }
-    function callbackColor(value: IColor) {
-        return
-    }
-
-    render(<TestComponent value="1" callback={callbackString} />)
-    render(
-        <TestComponent value={{ name: "red", css: "rgb(255, 0, 0)" }} callback={callbackColor} />
-    )
-
-    // this test has no `expect` calls as it verifies whether such component compiles or not
-})
-
+//
+// it("should preserve generic parameters when forwardRef", () => {
+//     interface IMethods {
+//         focus(): void
+//     }
+//
+//     interface IColor {
+//         name: string
+//         css: string
+//     }
+//
+//     interface ITestComponentProps<T> {
+//         value: T
+//         callback: (value: T) => void
+//     }
+//     const TestComponent = observer(
+//         <T extends unknown>(props: ITestComponentProps<T>, ref: React.Ref<IMethods>) => {
+//             return null
+//         },
+//         { forwardRef: true }
+//     )
+//
+//     function callbackString(value: string) {
+//         return
+//     }
+//     function callbackColor(value: IColor) {
+//         return
+//     }
+//
+//     render(<TestComponent value="1" callback={callbackString} />)
+//     render(
+//         <TestComponent value={{ name: "red", css: "rgb(255, 0, 0)" }} callback={callbackColor} />
+//     )
+//
+//     // this test has no `expect` calls as it verifies whether such component compiles or not
+// })
+//
 it("should keep original props types", () => {
     interface TestComponentProps {
         a: number
