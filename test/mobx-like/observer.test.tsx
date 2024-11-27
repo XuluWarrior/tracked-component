@@ -634,7 +634,9 @@ test("parent / childs render in the right order", done => {
 
     render(<Parent />)
 
-    tryLogout()
+    act(() => {
+        tryLogout()
+    })
     expect(events).toEqual(["parent", "child", "parent"])
     done()
 })
