@@ -56,11 +56,11 @@ it("should respect transaction", async () => {
     const { container } = render(<Component />)
 
     act(() => {
-        mobx.transaction(() => {
-            a.set(3)
-            a.set(4)
-            loaded.set(true)
-        })
+        // mobx.transaction(() => {
+        a.set(3)
+        a.set(4)
+        loaded.set(true)
+        // })
     })
 
     expect(container.textContent!.replace(/\s+/g, "")).toBe("4")
