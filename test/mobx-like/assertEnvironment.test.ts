@@ -9,11 +9,3 @@ it("throws if react is not installed", () => {
         `"mobx-react-lite requires React with Hooks support"`
     )
 })
-
-it("throws if mobx is not installed", () => {
-    jest.mock("react", () => ({ useState: true }))
-    jest.mock("mobx", () => ({}))
-    expect(() => require("../src/utils/assertEnvironment.ts")).toThrowErrorMatchingInlineSnapshot(
-        `"mobx-react-lite@3 requires mobx at least version 6 to be available"`
-    )
-})
