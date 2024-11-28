@@ -29,7 +29,7 @@ test("mobx issue 50", done => {
 
     render(<Test />)
 
-    setImmediate(() => {
+    setTimeout(() => {
         act(() => {
             flipStuff()
         })
