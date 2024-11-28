@@ -6,7 +6,8 @@ import {
   useEffect,
   useRef,
   useState,
-  PropsWithoutRef,
+  FunctionComponent,
+  PropsWithChildren,
   ReactNode, memo, createElement,
 } from "react";
 
@@ -19,7 +20,7 @@ setPropertyDidChange(() => {
   }
 });
 
-export abstract class TrackedComponent {
+export abstract class TrackedComponent<P extends object> {
   abstract render(): ReactNode
 
   onMount(): void { }
@@ -44,14 +45,14 @@ export abstract class TrackedComponent {
     (this.cache as any)[this.snapshotSymbol] = 0;
   }
 
-  props: PropsWithoutRef<unknown>
+  props!: P
 
   get cachedRender(): ReactNode {
     return getValue(this.cache)
   }
 
   toComponentFn() {
-    return memo((props: any) => {
+    return memo((props: P) => {
       this.props = props
       this.invalidateCache()
       const [state, rerender] = useState(0);
@@ -79,11 +80,11 @@ export abstract class TrackedComponent {
   }
 }
 
-class TrackedComponentFromFn extends TrackedComponent {
+class TrackedComponentFromFn<P extends object> extends TrackedComponent<P> {
   get displayName(): string {
     return this.renderFn.name
   }
-  constructor(readonly renderFn: (props: any) => ReactNode) {
+  constructor(readonly renderFn: FunctionComponent<PropsWithChildren<P>>) {
     super();
   }
 
