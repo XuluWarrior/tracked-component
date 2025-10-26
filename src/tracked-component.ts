@@ -93,7 +93,7 @@ class TrackedComponentFromFn<P extends object> extends TrackedComponent<P> {
   }
 }
 
-export function trackedComponent(renderFn: (props: any) => ReactNode) {
+export function trackedComponent<P extends object>(renderFn: React.FunctionComponent<PropsWithChildren<P>>) {
   return (...args: any[]) => {
     const ref = useRef(new TrackedComponentFromFn(renderFn).toComponentFn());
 
@@ -107,4 +107,15 @@ export function useTracking<T extends ReactNode>(fn: () => T) {
   return ref.current!({});
 }
 
-export const Tracking = trackedComponent(({children}) => children?.() ?? null)
+interface ITrackingProps {
+  children?(): React.ReactElement | null
+  render?(): React.ReactElement | null
+}
+
+export function Tracking({ children, render }: ITrackingProps): ReactNode | null {
+  const component = children || render
+  if (typeof component !== "function") {
+    return null
+  }
+  return useTracking(component)
+}
