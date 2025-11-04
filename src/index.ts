@@ -1,4 +1,4 @@
 export * from './action'
+export * from './context-provider'
 export * from './trackable'
-export * from './tracked'
 export * from './tracked-component'
