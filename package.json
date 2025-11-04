@@ -43,5 +43,8 @@
     "ts-jest": "^29.2.5",
     "tsc-watch": "^6.2.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@xuluwarrior/tracked": "^0.0.3"
   }
 }
