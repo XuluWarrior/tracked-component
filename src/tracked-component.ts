@@ -1,104 +1,81 @@
-import { createCache, getValue, validateTag, Tag, Revision } from "@glimmer/validator";
-
-import {setPropertyDidChange} from './tracked';
-
 import {
-  useEffect,
-  useRef,
-  useState,
-  FunctionComponent,
-  PropsWithChildren,
-  ReactNode, memo, createElement,
+    createElement,
+        FunctionComponent,
+        memo as reactMemo,
+        ReactNode,
+        useEffect,
+        useRef,
+        useState
 } from "react";
 
-
-const handlers = new Map<object, ()=>void>()
-
-setPropertyDidChange(() => {
-  for (const handler of [...handlers.values()]) {
-    handler();
-  }
-});
+import {Consumer} from "@xuluwarrior/tracked";
 
 export abstract class TrackedComponent<P extends object> {
-  abstract render(): ReactNode
+    abstract render(): ReactNode
 
-  onMount(): void { }
+    rerender = (_count: number) => {}
 
-  onDismount(): void { handlers.delete(this) }
+    onMount(): void {
+        console.log("mount")
 
-  cache = createCache<ReactNode>(this.render.bind(this))
-
-  tagSymbol = Object.getOwnPropertySymbols(this.cache).find(symbol => symbol.description === "TAG")!
-
-  snapshotSymbol = Object.getOwnPropertySymbols(this.cache).find(symbol => symbol.description === "SNAPSHOT")!
-
-  get tag(): Tag {
-    return (this.cache as any)[this.tagSymbol] as Tag;
-  }
-
-  get snapshot(): Revision {
-    return (this.cache as any)[this.snapshotSymbol] as Revision;
-  }
-
-  invalidateCache(): void {
-    (this.cache as any)[this.snapshotSymbol] = 0;
-  }
-
-  props!: P
-
-  get cachedRender(): ReactNode {
-    return getValue(this.cache)
-  }
-
-  toComponentFn() {
-    return memo((props: P) => {
-      this.props = props
-      this.invalidateCache()
-      const [state, rerender] = useState(0);
-      const handler = () => {
-        if (!validateTag(this.tag, this.snapshot)) {
-          rerender(state + 1)
-        }
-      };
-      handlers.set(this, handler)
-      useEffect(() => {
-        this.onMount();
-        return this.onDismount;
-      }, [])
-
-      return this.cachedRender
-    })
-  }
-
-  static toComponentFn() {
-    return (...args: any[]) => {
-      const ref = useRef((new (this as any)).toComponentFn());
-
-      return createElement(ref.current, args[0])
+        console.log("add listener")
+        this.consumer.addListener(() =>
+            this.rerender(Date.now()))
     }
-  }
+
+    onDismount(): void {
+        console.log("dismount")
+        // TODO: Destroy consumer properly
+        this.consumer.listeners.clear();
+    }
+
+    props!: P
+
+    consumer = new Consumer(this.render.bind(this))
+
+    toComponentFn() {
+        return reactMemo((props: P) => {
+            this.props = props
+            const [_state, rerender] = useState(0);
+
+            this.rerender = rerender
+
+            useEffect(() => {
+                this.onMount();
+                return this.onDismount.bind(this);
+            }, [])
+
+            return this.consumer.getValue()
+        })
+    }
+
+    static toComponentFn() {
+        return (...args: any[]) => {
+            const ref = useRef((new (this as any)).toComponentFn());
+
+            const element = createElement(ref.current, args[0])
+            // return createElement(ref.current, args[0])
+            return element
+        }
+    }
+
+    static $$typeof = Symbol.for("react.memo")
+    static get type() {
+        return this.toComponentFn()
+    }
 }
 
-class TrackedComponentFromFn<P extends object> extends TrackedComponent<P> {
-  get displayName(): string {
-    return this.renderFn.name
-  }
-  constructor(readonly renderFn: FunctionComponent<PropsWithChildren<P>>) {
-    super();
-  }
+export function trackedComponent<P>(renderFn: FunctionComponent<P>) {
+    return reactMemo((props: P) => {
+        const [state, rerender] = useState(0);
+        const consumerRef = useRef(new Consumer(() => renderFn(props)))
 
-  render(): ReactNode {
-    return this.renderFn(this.props)
-  }
-}
+        consumerRef.current.listeners.clear();
+        consumerRef.current.addListener(() =>
+            rerender(state + 1))
 
-export function trackedComponent<P extends object>(renderFn: React.FunctionComponent<PropsWithChildren<P>>) {
-  return (...args: any[]) => {
-    const ref = useRef(new TrackedComponentFromFn(renderFn).toComponentFn());
-
-    return createElement(ref.current, args[0])
-  }
+        return consumerRef.current.getValue()
+    })
 }
 
 export function useTracking<T extends ReactNode>(fn: () => T) {
