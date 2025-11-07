@@ -1,11 +1,11 @@
 import {
     createElement,
-        FunctionComponent,
-        memo as reactMemo,
-        ReactNode,
-        useEffect,
-        useRef,
-        useState
+    FunctionComponent,
+    memo as reactMemo,
+    ReactNode, RefObject,
+    useEffect,
+    useRef,
+    useState
 } from "react";
 
 import {Consumer} from "@xuluwarrior/tracked";
@@ -68,7 +68,16 @@ export abstract class TrackedComponent<P extends object> {
 export function trackedComponent<P>(renderFn: FunctionComponent<P>) {
     return reactMemo((props: P) => {
         const [state, rerender] = useState(0);
-        const consumerRef = useRef(new Consumer(() => renderFn(props)))
+        const propsContainer = useRef({ props });
+        propsContainer.current.props = props;
+        function getPropsFromRef(ref: RefObject<{ props: P}>) {
+            return ref.current.props
+        }
+        const consumerRef = useRef(
+            new Consumer(() =>
+                renderFn(getPropsFromRef(propsContainer))
+            )
+        )
 
         consumerRef.current.listeners.clear();
         consumerRef.current.addListener(() =>
