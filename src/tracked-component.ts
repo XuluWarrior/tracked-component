@@ -95,7 +95,7 @@ export function trackedComponent<P>(renderFn: FunctionComponent<P>) {
 export function useTracking<T extends ReactNode>(fn: () => T) {
   const ref = useRef(trackedComponent(fn));
 
-  return ref.current!({});
+  return createElement(ref.current!);
 }
 
 interface ITrackingProps {
