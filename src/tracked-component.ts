@@ -19,14 +19,17 @@ export abstract class TrackedComponent<P extends object> {
         console.log("mount")
 
         console.log("add listener")
-        this.consumer.addListener(() =>
-            this.rerender(Date.now()))
+        this.consumer.addListener(this.onConsumerDirtied)
     }
 
     onDismount(): void {
         console.log("dismount")
         // TODO: Destroy consumer properly
         this.consumer.listeners.clear();
+    }
+
+    onConsumerDirtied = ()=> {
+        this.rerender(Date.now())
     }
 
     props!: P
