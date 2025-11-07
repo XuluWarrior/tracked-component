@@ -48,6 +48,8 @@ export abstract class TrackedComponent<P extends object> {
                 return this.onDismount.bind(this);
             }, [])
 
+            this.consumer.addListener(this.onConsumerDirtied)
+
             return this.consumer.getValue()
         })
     }
