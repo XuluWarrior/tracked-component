@@ -46,6 +46,6 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@xuluwarrior/tracked": "^0.0.3"
+    "@xuluwarrior/tracked": "^0.0.4"
   }
 }
