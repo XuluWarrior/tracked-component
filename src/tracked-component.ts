@@ -34,8 +34,13 @@ export abstract class TrackedComponent<P extends object> {
         this.consumer.listeners.clear();
     }
 
-    onConsumerDirtied = ()=> {
-        this.rerender(Date.now())
+    @bound
+    onConsumerDirtied() {
+        // If props were changed we will already have rerendered
+        // We can check this by seeing in the consumer is still dirty
+        if (this.consumer.isDirty) {
+            this.rerender(Date.now())
+        }
     }
 
     props!: P
