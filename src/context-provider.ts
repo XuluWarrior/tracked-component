@@ -50,3 +50,19 @@ export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChi
         return extendedFn
     }
 }
+
+export type HasReactContext<V> = { reactContext: Context<V> }
+
+export function context<V>(contextProvider: HasReactContext<V>) {
+    return function <T extends TrackedComponent<any> = TrackedComponent<any>>(originalAccessor: ClassAccessorDecoratorResult<T, V>, context: ClassAccessorDecoratorContext<T, V>) {
+        context.addInitializer(function () {
+            this.requiredContext.set(contextProvider, undefined)
+        });
+
+        return {
+            get() {
+                return this.requiredContext.get(contextProvider)
+            }
+        } as ClassAccessorDecoratorResult<T, V>;
+    }
+}

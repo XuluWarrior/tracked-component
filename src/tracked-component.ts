@@ -13,6 +13,8 @@ import {Consumer} from "@xuluwarrior/tracked";
 export abstract class TrackedComponent<P extends object> {
     abstract render(): ReactNode
 
+    public requiredContext = new Map<HasReactContext<any>, any>()
+
     rerender = (_count: number) => {}
 
     onMount(): void {
@@ -48,8 +50,9 @@ export abstract class TrackedComponent<P extends object> {
                 return this.onDismount.bind(this);
             }, [])
 
-            this.consumer.addListener(this.onConsumerDirtied)
-
+            for (const contextProvider of this.requiredContext.keys()) {
+                this.requiredContext.set(contextProvider, useContext(contextProvider.reactContext).value)
+            }
             return this.consumer.getValue()
         })
     }
