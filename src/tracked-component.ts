@@ -35,6 +35,8 @@ function updateChanged<T extends Record<any,any>>(oldObj: T, newObj: T): void {
 export abstract class TrackedComponent<P extends object> {
     abstract render(): ReactNode
 
+    private firstRender = true;
+
     public requiredContext = new Map<HasReactContext<any>, any>()
 
     rerender = (_count: number) => {}
@@ -78,7 +80,11 @@ export abstract class TrackedComponent<P extends object> {
 
     toComponentFn() {
         return reactMemo((props: P) => {
-            this.props = props
+            if (this.firstRender) {
+                updateChanged(this.props, props)
+                this.firstRender = false;
+            }
+
             const [_state, rerender] = useState(0);
 
             this.rerender = rerender
