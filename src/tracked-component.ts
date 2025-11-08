@@ -102,13 +102,16 @@ export abstract class TrackedComponent<P extends object> {
     }
 
     static toComponentFn() {
-        return (...args: any[]) => {
-            const ref = useRef((new (this as any)).toComponentFn());
+        // Arrow functions get their name from the name of the variable/field they are assigned to
+        const obj = {
+            [this.name]: (...args: any[]) => {
+                const ref = useRef((new (this as any)).toComponentFn());
 
-            const element = createElement(ref.current, args[0])
-            // return createElement(ref.current, args[0])
-            return element
+                return createElement(ref.current, args[0])
+            }
         }
+
+        return obj[this.name]
     }
 
     static $$typeof = Symbol.for("react.memo")
