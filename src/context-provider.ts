@@ -20,14 +20,18 @@ export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChi
 
     abstract getContext(): V
 
-    render() {
+    renderProvider(children: ReactNode) {
         const {Provider} = this.reactContext;
         const contextContent = useContext(this.reactContext);
         const currentValue = this.getContext();
         if (contextContent.value !== currentValue) {
             contextContent.value = this.getContext()
         }
-        return createElement(Provider, { value: context}, this.props.children)
+        return createElement(Provider, { value: contextContent}, children)
+    }
+
+    render() {
+        return this.renderProvider(this.props.children)
     }
 
     static override toComponentFn<C = unknown>() {
