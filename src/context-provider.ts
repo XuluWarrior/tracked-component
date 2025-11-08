@@ -12,8 +12,6 @@ export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChi
         return thisish[privateContextName];
     }
 
-    abstract getValue(): V
-
     private get reactContext() {
         return (this.constructor as any).reactContext as Context<{ value: V | null }>
     }
