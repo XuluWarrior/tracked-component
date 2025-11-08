@@ -140,14 +140,14 @@ export function trackedComponent<P>(renderFn: FunctionComponent<P>) {
 }
 
 export function useTracking<T extends ReactNode>(fn: () => T) {
-  const ref = useRef(trackedComponent(fn));
+    const ref = useRef(trackedComponent(fn));
 
-  return createElement(ref.current!);
+    return createElement(ref.current!);
 }
 
 interface ITrackingProps {
-  children?(): React.ReactElement | null
-  render?(): React.ReactElement | null
+    children?(): React.ReactElement | null
+    render?(): React.ReactElement | null
 }
 
 export function Tracking({ children, render }: ITrackingProps): ReactNode | null {
