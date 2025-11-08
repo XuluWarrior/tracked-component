@@ -41,23 +41,12 @@ export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChi
     }
 
     static override toComponentFn<C = unknown>() {
-        console.log("It begins")
-        const context =
-            createContext<{value: C | null} | null>(trackedRecord({value: null}, "context-provider"))
-        const componentFn = (...args: any[]) => {
-            const ref = useRef((new (this as any)(context).toComponentFn()));
+        const componentFn = super.toComponentFn();
+        const extendedFn: typeof componentFn & { useContext: () => C, reactContext: Context<C>} = componentFn as any
 
-            const element = createElement(ref.current, args[0])
-            // return createElement(ref.current, args[0])
-            return element
-        }
-        componentFn.useContext = () => {
-            const currentContext = useContext(context)
-            if (currentContext === null) {
-                throw new Error("useContext must be used within provider "); //"useReviewDocumentContext must be used within ReviewDocumentProvider");
-            }
-            return currentContext.value
-        }
-        return componentFn
+
+        extendedFn.useContext = (this as any).useContext.bind(this);
+        extendedFn.reactContext = (this as any).reactContext;
+        return extendedFn
     }
 }
