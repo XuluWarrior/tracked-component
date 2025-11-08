@@ -10,6 +10,9 @@ import {
 
 import {Consumer} from "@xuluwarrior/tracked";
 
+import {HasReactContext} from "./context-provider";
+
+
 export abstract class TrackedComponent<P extends object> {
     abstract render(): ReactNode
 
