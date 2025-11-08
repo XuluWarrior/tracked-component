@@ -18,12 +18,14 @@ export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChi
         return (this.constructor as any).reactContext as Context<{ value: V | null }>
     }
 
+    abstract getContext(): V
+
     render() {
-        const { Provider } = this.context;
-        const context = useContext(this.context);
-        const currentValue = this.getValue();
-        if (context.value !== currentValue) {
-            context.value = this.getValue()
+        const {Provider} = this.reactContext;
+        const contextContent = useContext(this.reactContext);
+        const currentValue = this.getContext();
+        if (contextContent.value !== currentValue) {
+            contextContent.value = this.getContext()
         }
         return createElement(Provider, { value: context}, this.props.children)
     }
