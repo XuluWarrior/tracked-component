@@ -12,6 +12,14 @@ export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChi
         return thisish[privateContextName];
     }
 
+    static useContext<C>() {
+        const currentContext = useContext<{ value: C}>((this as any).reactContext)
+        if (currentContext === null) {
+            throw new Error("useContext must be used within provider "); //"useReviewDocumentContext must be used within ReviewDocumentProvider");
+        }
+        return currentContext.value
+    }
+
     private get reactContext() {
         return (this.constructor as any).reactContext as Context<{ value: V | null }>
     }
