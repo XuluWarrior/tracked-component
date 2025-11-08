@@ -2,21 +2,21 @@ import {Context, createContext, createElement, PropsWithChildren, useContext, us
 import {TrackedComponent} from "./tracked-component";
 import {trackedRecord} from "@xuluwarrior/tracked";
 
-export abstract class ContextProvider<T extends PropsWithChildren, V> extends TrackedComponent<T> {
-    constructor(private context:Context<{ value: V | null }> ) {
-        super();
+export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChildren<T>> {
+    static get reactContext(): Context<any> {
+        const thisish = this as any;
+        const privateContextName = `context (${this.name})`
+        if (!thisish[privateContextName]) {
+            thisish[privateContextName] = createContext(trackedRecord({value: null}, `${this.name}-context-provider`))
+        }
+        return thisish[privateContextName];
     }
 
     abstract getValue(): V
 
-    // useContext(): V {
-    //     consumed(this.trackingSymbol);
-    //     const context = useContext(this.context)
-    //     if (context === null) {
-    //         throw new Error("useContext must be used within provider "); //"useReviewDocumentContext must be used within ReviewDocumentProvider");
-    //     }
-    //     return context;
-    // }
+    private get reactContext() {
+        return (this.constructor as any).reactContext as Context<{ value: V | null }>
+    }
 
     render() {
         const { Provider } = this.context;
