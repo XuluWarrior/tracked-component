@@ -154,9 +154,9 @@ interface ITrackingProps {
 }
 
 export function Tracking({ children, render }: ITrackingProps): ReactNode | null {
-  const component = children || render
-  if (typeof component !== "function") {
-    return null
-  }
-  return useTracking(component)
+    const component = children || render
+    if (typeof component !== "function") {
+        return null
+    }
+    return useTracking(component)
 }
