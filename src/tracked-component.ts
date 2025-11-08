@@ -8,7 +8,7 @@ import {
     useState
 } from "react";
 
-import {Consumer} from "@xuluwarrior/tracked";
+import {Consumer, trackItems} from "@xuluwarrior/tracked";
 
 import {HasReactContext} from "./context-provider";
 
@@ -20,6 +20,15 @@ export function bound(_originalMethod: unknown, context: ClassMethodDecoratorCon
     context.addInitializer(function () {
         this[methodName] = this[methodName].bind(this);
     });
+}
+
+function updateChanged<T extends Record<any,any>>(oldObj: T, newObj: T): void {
+    for (const [key, newValue] of Object.entries(newObj)) {
+        if (oldObj[key] !== newValue) {
+            console.log(`${key} changed from ${oldObj[key]} to ${newValue}`)
+            oldObj[key as keyof T] = newValue;
+        }
+    }
 }
 
 
@@ -57,9 +66,15 @@ export abstract class TrackedComponent<P extends object> {
         }
     }
 
-    props!: P
+    props: P = trackItems({} as P, "onChanged")
 
     consumer = new Consumer(this.render.bind(this))
+
+    @bound
+    updateProps(_prevProps: P, newProps: P) {
+        updateChanged(this.props, newProps);
+        return !this.consumer.isDirty  //
+    }
 
     toComponentFn() {
         return reactMemo((props: P) => {
@@ -77,7 +92,7 @@ export abstract class TrackedComponent<P extends object> {
                 this.requiredContext.set(contextProvider, useContext(contextProvider.reactContext).value)
             }
             return this.consumer.getValue()
-        })
+        }, this.updateProps)
     }
 
     static toComponentFn() {
