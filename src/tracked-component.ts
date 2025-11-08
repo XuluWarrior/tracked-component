@@ -37,7 +37,8 @@ export abstract class TrackedComponent<P extends object> {
     onMount(): void {
         console.log("mount")
 
-        console.log("add listener")
+        // In dev mode on render is called twice followed by onMount/onDismount/onMount
+        // As dismount clears the listeners, we need to ensure they are added by the end of the second onMount
         this.consumer.addListener(this.onConsumerDirtied)
     }
 
