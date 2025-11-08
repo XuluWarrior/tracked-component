@@ -12,6 +12,16 @@ import {Consumer} from "@xuluwarrior/tracked";
 
 import {HasReactContext} from "./context-provider";
 
+export function bound(_originalMethod: unknown, context: ClassMethodDecoratorContext<any>) {
+    const methodName = context.name;
+    if (context.private) {
+        throw new Error(`'bound' cannot decorate private properties like ${methodName as string}.`);
+    }
+    context.addInitializer(function () {
+        this[methodName] = this[methodName].bind(this);
+    });
+}
+
 
 export abstract class TrackedComponent<P extends object> {
     abstract render(): ReactNode
