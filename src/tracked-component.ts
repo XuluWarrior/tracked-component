@@ -17,6 +17,10 @@ export abstract class TrackedComponent<P extends object> {
 
     rerender = (_count: number) => {}
 
+    constructor() {
+        this.consumer.addListener(this.onConsumerDirtied)
+    }
+
     onMount(): void {
         console.log("mount")
 
