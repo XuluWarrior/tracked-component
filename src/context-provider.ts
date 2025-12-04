@@ -1,4 +1,4 @@
-import {Context, createContext, createElement, PropsWithChildren, ReactNode, useContext, useRef} from "react";
+import {Context, createContext, createElement, PropsWithChildren, ReactNode, useContext} from "react";
 import {TrackedComponent} from "./tracked-component";
 import {trackedRecord} from "@xuluwarrior/tracked";
 
@@ -54,7 +54,7 @@ export abstract class ContextProvider<T,V> extends TrackedComponent<PropsWithChi
 export type HasReactContext<V> = { reactContext: Context<V> }
 
 export function context<V>(contextProvider: HasReactContext<V>) {
-    return function <T extends TrackedComponent<any> = TrackedComponent<any>>(originalAccessor: ClassAccessorDecoratorResult<T, V>, context: ClassAccessorDecoratorContext<T, V>) {
+    return function <T extends TrackedComponent<any> = TrackedComponent<any>>(_originalAccessor: ClassAccessorDecoratorResult<T, V>, context: ClassAccessorDecoratorContext<T, V>) {
         context.addInitializer(function () {
             this.requiredContext.set(contextProvider, undefined)
         });
