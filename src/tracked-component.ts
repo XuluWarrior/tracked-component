@@ -8,19 +8,10 @@ import {
     useState
 } from "react";
 
+import { bound } from "@xuluwarrior/basic/src/decorators"
 import {Consumer, trackItems} from "@xuluwarrior/tracked";
 
 import {HasReactContext} from "./context-provider";
-
-export function bound(_originalMethod: unknown, context: ClassMethodDecoratorContext<any>) {
-    const methodName = context.name;
-    if (context.private) {
-        throw new Error(`'bound' cannot decorate private properties like ${methodName as string}.`);
-    }
-    context.addInitializer(function () {
-        this[methodName] = this[methodName].bind(this);
-    });
-}
 
 function updateChanged<T extends Record<any,any>>(oldObj: T, newObj: T): void {
     for (const [key, newValue] of Object.entries(newObj)) {
