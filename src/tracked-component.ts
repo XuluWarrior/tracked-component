@@ -22,6 +22,10 @@ function updateChanged<T extends Record<any,any>>(oldObj: T, newObj: T): void {
     }
 }
 
+function named<T extends Function>(name: string, fn: T): T {
+    Object.defineProperty(fn, "name", {value: name});
+    return fn;
+}
 
 export abstract class TrackedComponent<P extends object> {
     abstract render(): ReactNode
