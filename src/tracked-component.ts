@@ -40,7 +40,12 @@ export abstract class TrackedComponent<P extends object> {
         this.consumer.addListener(this.onConsumerDirtied)
     }
 
-    onMount(): void {
+    // To be overriden by child components
+    onMount(): void {}
+    onDismount(): void {}
+
+    // onMount/Dismount behaviour that we can't let me lost due overrides
+    #onMount(): void {
         console.log("mount")
 
         // In dev mode on render is called twice followed by onMount/onDismount/onMount
@@ -48,7 +53,7 @@ export abstract class TrackedComponent<P extends object> {
         this.consumer.addListener(this.onConsumerDirtied)
     }
 
-    onDismount(): void {
+    #onDismount(): void {
         console.log("dismount")
         // TODO: Destroy consumer properly
         this.consumer.listeners.clear();
@@ -87,8 +92,12 @@ export abstract class TrackedComponent<P extends object> {
             this.rerender = rerender
 
             useEffect(() => {
+                this.#onMount();
                 this.onMount();
-                return this.onDismount.bind(this);
+                return () => {
+                    this.#onDismount();
+                    this.onDismount();
+                }
             }, [])
 
             for (const contextProvider of this.requiredContext.keys()) {
