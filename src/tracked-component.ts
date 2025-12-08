@@ -47,16 +47,12 @@ export abstract class TrackedComponent<P extends object> {
     // onMount/Dismount behaviour that we can't let me lost due overrides
     #onMount(): void {
         console.log("mount")
-
-        // In dev mode on render is called twice followed by onMount/onDismount/onMount
-        // As dismount clears the listeners, we need to ensure they are added by the end of the second onMount
-        this.consumer.addListener(this.onConsumerDirtied)
+        this.consumer.restore()
     }
 
     #onDismount(): void {
         console.log("dismount")
-        // TODO: Destroy consumer properly
-        this.consumer.listeners.clear();
+        this.consumer.stop();
     }
 
     @bound
