@@ -65,7 +65,9 @@ export abstract class TrackedComponent<P extends object> {
 
     props: P = trackItems({} as P, "onChanged")
 
-    consumer = new Consumer(this.render.bind(this))
+    consumer = new Consumer(
+        named(`${this.constructor.name}-render`, () => this.render())
+    )
 
     @bound
     updateProps(_prevProps: P, newProps: P) {
@@ -74,7 +76,7 @@ export abstract class TrackedComponent<P extends object> {
     }
 
     toComponentFn() {
-        return reactMemo((props: P) => {
+        return reactMemo(named(`${this.constructor.name}-memoised`, (props: P) => {
             if (this.firstRender) {
                 updateChanged(this.props, props)
                 this.firstRender = false;
@@ -93,20 +95,16 @@ export abstract class TrackedComponent<P extends object> {
                 this.requiredContext.set(contextProvider, useContext(contextProvider.reactContext).value)
             }
             return this.consumer.getValue()
-        }, this.updateProps)
+        }), this.updateProps)
     }
 
     static toComponentFn() {
-        // Arrow functions get their name from the name of the variable/field they are assigned to
-        const obj = {
-            [this.name]: (...args: any[]) => {
-                const ref = useRef((new (this as any)).toComponentFn());
+        return named(this.name, (...args: any[]) => {
+            const ref = useRef((new (this as any)).toComponentFn());
 
-                return createElement(ref.current, args[0])
-            }
-        }
-
-        return obj[this.name]
+            const element = createElement(ref.current, args[0])
+            return element
+        })
     }
 
     static $$typeof = Symbol.for("react.memo")
@@ -116,25 +114,26 @@ export abstract class TrackedComponent<P extends object> {
 }
 
 export function trackedComponent<P>(renderFn: FunctionComponent<P>) {
-    return reactMemo((props: P) => {
-        const [state, rerender] = useState(0);
-        const propsContainer = useRef({ props });
-        propsContainer.current.props = props;
-        function getPropsFromRef(ref: RefObject<{ props: P}>) {
-            return ref.current.props
-        }
-        const consumerRef = useRef(
-            new Consumer(() =>
-                renderFn(getPropsFromRef(propsContainer))
+    return reactMemo(
+        named(`${renderFn.name}-memoised`, (props: P) => {
+            const [state, rerender] = useState(0);
+            const propsContainer = useRef({ props });
+            propsContainer.current.props = props;
+            function getPropsFromRef(ref: RefObject<{ props: P}>) {
+                return ref.current.props
+            }
+            const consumerRef = useRef(
+                new Consumer(named(`${renderFn.name}-render`, () =>
+                    renderFn(getPropsFromRef(propsContainer))
+                ))
             )
-        )
+            consumerRef.current.listeners.clear();
+            consumerRef.current.addListener(() =>
+                rerender(state + 1))
 
-        consumerRef.current.listeners.clear();
-        consumerRef.current.addListener(() =>
-            rerender(state + 1))
-
-        return consumerRef.current.getValue()
-    })
+            return consumerRef.current.getValue()
+        })
+    )
 }
 
 export function useTracking<T extends ReactNode>(fn: () => T) {
