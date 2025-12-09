@@ -41,6 +41,10 @@ export abstract class TrackedComponent<P extends object> {
         this.consumer.addListener(this.onConsumerDirtied)
     }
 
+    //  Called before concrete render.  Unlike constructor this.props will be available
+    // This will allow a component to initialise state even if onMount isn't called due to Suspense
+    initialise(): void {}
+
     // To be overriden by child components
     onMount(): void {}
     onDismount(): void {}
@@ -80,7 +84,8 @@ export abstract class TrackedComponent<P extends object> {
     toComponentFn() {
         return reactMemo(named(`${this.constructor.name}-memoised`, (props: P) => {
             if (this.firstRender) {
-                updateChanged(this.props, props)
+                updateChanged(this.props, props);
+                this.initialise();
                 this.firstRender = false;
             }
 
