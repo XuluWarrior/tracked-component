@@ -14,9 +14,10 @@ import {Consumer, trackItems} from "@xuluwarrior/tracked";
 import {HasReactContext} from "./context-provider";
 
 function updateChanged<T extends Record<any,any>>(oldObj: T, newObj: T): void {
+    const hadProps = Object.keys(oldObj).length > 0
     for (const [key, newValue] of Object.entries(newObj)) {
         if (oldObj[key] !== newValue) {
-            console.log(`${key} changed from ${oldObj[key]} to ${newValue}`)
+            hadProps && console.log(`${key} changed from ${oldObj[key]} to ${newValue}`)
             oldObj[key as keyof T] = newValue;
         }
     }
