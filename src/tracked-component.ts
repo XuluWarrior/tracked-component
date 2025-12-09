@@ -106,7 +106,10 @@ export abstract class TrackedComponent<P extends object> {
 
     static toComponentFn() {
         return named(this.name, (...args: any[]) => {
-            const ref = useRef((new (this as any)).toComponentFn());
+            const ref = useRef<any>(undefined);
+            if (!ref.current) {
+                ref.current = (new (this as any)).toComponentFn();
+            }
 
             const element = createElement(ref.current, args[0])
             return element
