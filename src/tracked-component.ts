@@ -47,12 +47,12 @@ export abstract class TrackedComponent<P extends object> {
 
     // onMount/Dismount behaviour that we can't let me lost due overrides
     #onMount(): void {
-        console.log("mount")
+        console.log("mount", this.constructor.name)
         this.consumer.restore()
     }
 
     #onDismount(): void {
-        console.log("dismount")
+        console.log("dismount", this.constructor.name)
         this.consumer.stop();
     }
 
