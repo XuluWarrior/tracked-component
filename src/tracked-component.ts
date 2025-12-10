@@ -184,6 +184,18 @@ export function Tracking({ children, render }: ITrackingProps): ReactNode | null
     return useTracking(component)
 }
 
+function valIfReady<V>(val: V): V {
+    const possibleService = val as any
+    if (possibleService.isReady !== undefined && possibleService.readyPromise !== undefined) {
+        if (possibleService.isReady) {
+            return val;
+        } else {
+            throw possibleService.readyPromise;
+        }
+    }
+    return val;
+}
+
 export function required<T extends any = any, V extends any = any>(originalAccessor: ClassAccessorDecoratorResult<T, V>, context: ClassAccessorDecoratorContext<T, V>): ClassAccessorDecoratorResult<T, V>;
 export function required<T extends any = any, V extends any = any>(originalGetter: Function, context: ClassGetterDecoratorContext<T, V>): () => NonNullable<V>;
 export function required<T extends any = any, V extends any = any>(original: Function | ClassAccessorDecoratorResult<T, V>, context: ClassGetterDecoratorContext<T, V> | ClassAccessorDecoratorContext<T, V>) {
@@ -208,7 +220,7 @@ export function requiredFunction<T extends any = any, V extends any = any>(origi
         const consumer = this[consumerSymFieldName] as Consumer<V>
         const val = consumer.getValue();
         if (val) {
-            return val;
+            return valIfReady(val)
         } else {
             const waitFor = new Promise<void>(resolve =>
                 consumer.addListener(resolve))
@@ -234,7 +246,7 @@ export function requiredAccessor<T extends any = any, V extends any = any>(origi
 
             const val = originalAccessor.get!.call(this);
             if (val) {
-                return val;
+                return valIfReady(val);
             } else {
                 const waitFor = new Promise(resolve => (this as any)[resolvingSymFieldName] = resolve)
                 throw waitFor;
