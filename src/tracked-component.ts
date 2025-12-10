@@ -12,7 +12,7 @@ import {
 import { jsx } from "react/jsx-runtime";
 
 import { bound } from "@xuluwarrior/basic/src/decorators"
-import {Consumer, trackItems} from "@xuluwarrior/tracked";
+import {consumed, Consumer, dirtyProp, trackItems} from "@xuluwarrior/tracked";
 
 import {HasReactContext} from "./context-provider";
 
@@ -184,7 +184,14 @@ export function Tracking({ children, render }: ITrackingProps): ReactNode | null
     return useTracking(component)
 }
 
-export function required<T extends any = any, V extends any = any>(originalGetter: Function, context: ClassGetterDecoratorContext<T, V>) {
+export function required<T extends any = any, V extends any = any>(originalAccessor: ClassAccessorDecoratorResult<T, V>, context: ClassAccessorDecoratorContext<T, V>): ClassAccessorDecoratorResult<T, V>;
+export function required<T extends any = any, V extends any = any>(originalGetter: Function, context: ClassGetterDecoratorContext<T, V>): () => NonNullable<V>;
+export function required<T extends any = any, V extends any = any>(original: Function | ClassAccessorDecoratorResult<T, V>, context: ClassGetterDecoratorContext<T, V> | ClassAccessorDecoratorContext<T, V>) {
+    return typeof original === "function"
+        ?  requiredFunction(original, context as ClassGetterDecoratorContext)
+        : requiredAccessor(original, context as ClassAccessorDecoratorContext)
+}
+export function requiredFunction<T extends any = any, V extends any = any>(originalGetter: Function, context: ClassGetterDecoratorContext<T, V>): () => NonNullable<V> {
     const fieldName = context.name;
 
     // If we have a setter then we are a tracked field (TODO - This is only feasible if the field is outside the suspended component.  Otherwise it's state is lost on suspend.
@@ -208,4 +215,46 @@ export function required<T extends any = any, V extends any = any>(originalGette
             throw waitFor;
         }
     }
+}
+
+export function requiredAccessor<T extends any = any, V extends any = any>(originalAccessor: ClassAccessorDecoratorResult<T, V>, context: ClassAccessorDecoratorContext<T, V>, trigger = "onChanged") {
+    const fieldName = context.name;
+
+    const trackingSymFieldName = `#track_${fieldName.toString()}`;
+    const resolvingSymFieldName = `#resolve_${fieldName.toString()}`;
+
+    context.addInitializer(function (this: any) {
+        this[trackingSymFieldName] = Symbol(fieldName.toString())
+        this[resolvingSymFieldName] = undefined;
+    });
+
+    return {
+        get() {
+            consumed((this as any)[trackingSymFieldName]);
+
+            const val = originalAccessor.get!.call(this);
+            if (val) {
+                return val;
+            } else {
+                const waitFor = new Promise(resolve => (this as any)[resolvingSymFieldName] = resolve)
+                throw waitFor;
+            }
+        },
+        set: trigger === "onChanged" ?
+            function (val: V) {
+                if (originalAccessor.get!.call(this) !== val) {
+                    originalAccessor.set!.call(this, val);
+                    dirtyProp((this as any)[trackingSymFieldName]);
+                    const resolve = (this as any)[resolvingSymFieldName];
+                    if (resolve) {
+                        resolve();
+                        (this as any)[resolvingSymFieldName] = undefined;
+                    }
+                }
+            } :
+            function (val: V) {
+                originalAccessor.set!.call(this, val);
+                dirtyProp((this as any)[trackingSymFieldName]);
+            }
+    } as ClassAccessorDecoratorResult<T, V>;
 }
