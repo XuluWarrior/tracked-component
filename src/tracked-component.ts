@@ -1,12 +1,15 @@
 import {
     createElement,
     FunctionComponent,
+    Suspense,
     memo as reactMemo,
     ReactNode, RefObject, useContext,
     useEffect,
     useRef,
     useState
 } from "react";
+
+import { jsx } from "react/jsx-runtime";
 
 import { bound } from "@xuluwarrior/basic/src/decorators"
 import {Consumer, trackItems} from "@xuluwarrior/tracked";
@@ -28,8 +31,12 @@ function named<T extends Function>(name: string, fn: T): T {
     return fn;
 }
 
+type NoPropFC = () => ReactNode;
+
 export abstract class TrackedComponent<P extends object> {
-    abstract render(): ReactNode
+    abstract render(): ReactNode;
+    renderOnSuspended: NoPropFC | undefined = undefined
+
 
     private firstRender = true;
 
@@ -82,7 +89,7 @@ export abstract class TrackedComponent<P extends object> {
     }
 
     toComponentFn() {
-        return reactMemo(named(`${this.constructor.name}-memoised`, (props: P) => {
+        const memoiseFn = reactMemo(named(`${this.constructor.name}-memoised`, (props: P) => {
             if (this.firstRender) {
                 updateChanged(this.props, props);
                 this.initialise();
@@ -106,7 +113,15 @@ export abstract class TrackedComponent<P extends object> {
                 this.requiredContext.set(contextProvider, useContext(contextProvider.reactContext).value)
             }
             return this.consumer.getValue()
-        }), this.updateProps)
+        }), this.updateProps);
+
+        let componentFn: FunctionComponent<P> = memoiseFn;
+        if (this.renderOnSuspended) {
+            const childFn = componentFn
+            componentFn = (props: P) =>
+                jsx(Suspense, {fallback: jsx(this.renderOnSuspended!.bind(this), {}), children: jsx(childFn, props)})
+        }
+        return componentFn
     }
 
     static toComponentFn() {
