@@ -168,3 +168,29 @@ export function Tracking({ children, render }: ITrackingProps): ReactNode | null
     }
     return useTracking(component)
 }
+
+export function required<T extends any = any, V extends any = any>(originalGetter: Function, context: ClassGetterDecoratorContext<T, V>) {
+    const fieldName = context.name;
+
+    // If we have a setter then we are a tracked field (TODO - This is only feasible if the field is outside the suspended component.  Otherwise it's state is lost on suspend.
+    // Otherwise we should consume the getter
+    // Later value might be a "AsyncResult".  Then we should trigger based on its state (TODO)
+
+    const consumerSymFieldName = `#${fieldName.toString()}_consumer`;
+
+    context.addInitializer(function (this: any) {
+        this[consumerSymFieldName] = new Consumer(originalGetter!.bind(this))
+    });
+
+    return function(this: any) {
+        const consumer = this[consumerSymFieldName] as Consumer<V>
+        const val = consumer.getValue();
+        if (val) {
+            return val;
+        } else {
+            const waitFor = new Promise<void>(resolve =>
+                consumer.addListener(resolve))
+            throw waitFor;
+        }
+    }
+}
