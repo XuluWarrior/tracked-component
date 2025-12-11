@@ -42,6 +42,8 @@ export abstract class TrackedComponent<P extends object> {
 
     public requiredContext = new Map<HasReactContext<any>, any>()
 
+    public effects: Array<[() => void, Consumer]>  = [];
+
     rerender = (_count: number) => {}
 
     constructor() {
@@ -60,11 +62,23 @@ export abstract class TrackedComponent<P extends object> {
     #onMount(): void {
         console.log("mount", this.constructor.name)
         this.consumer.restore()
+
+        for (const [_, consumer] of this.effects) {
+            consumer.restore();
+        }
+        for (const [onMount, _] of this.effects) {
+            onMount();
+        }
     }
 
     #onDismount(): void {
         console.log("dismount", this.constructor.name)
         this.consumer.stop();
+
+        for (const [_, consumer] of this.effects) {
+            consumer.stop();
+        }
+        // TODO Implement effect dispose functionality
     }
 
     @bound
