@@ -15,6 +15,7 @@ import { bound } from "@xuluwarrior/basic/src/decorators"
 import {consumed, Consumer, dirtyProp, trackItems} from "@xuluwarrior/tracked";
 
 import {HasReactContext} from "./context-provider";
+import {ObservableAsync} from "./decorators";
 
 function updateChanged<T extends Record<any,any>>(oldObj: T, newObj: T): void {
     const hadProps = Object.keys(oldObj).length > 0
@@ -33,6 +34,10 @@ function named<T extends Function>(name: string, fn: T): T {
 
 type NoPropFC = () => ReactNode;
 
+interface Abortable {
+    abort(reason?: any): void
+}
+
 export abstract class TrackedComponent<P extends object> {
     abstract render(): ReactNode;
     renderOnSuspended: NoPropFC | undefined = undefined
@@ -43,6 +48,7 @@ export abstract class TrackedComponent<P extends object> {
     public requiredContext = new Map<HasReactContext<any>, any>()
 
     public effects: Array<[() => void, Consumer]>  = [];
+    private disposeOnUnmount: Array<Abortable> = [];
 
     rerender = (_count: number) => {}
 
@@ -78,7 +84,11 @@ export abstract class TrackedComponent<P extends object> {
         for (const [_, consumer] of this.effects) {
             consumer.stop();
         }
-        // TODO Implement effect dispose functionality
+        for (const disposeAction of this.disposeOnUnmount) {
+            if (disposeAction instanceof ObservableAsync) {
+                disposeAction.abort("Unmounted")
+            }
+        }
     }
 
     @bound

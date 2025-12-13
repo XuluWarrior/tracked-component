@@ -75,6 +75,7 @@ export function effect<T>(...pathsToTrack: PropPath<T>[]) {
             const consumerSym = Symbol(`${methodName.toString()}-consumer`) as keyof T
 
             let lastTrackedValues: any[] | undefined = undefined
+            let lastObservable: ObservableAsync<any> | undefined = undefined;
 
             const consumer = new Consumer(getTrackedValues, trackingSym)
             // consumer.getValue();  CHECK I DON"T NEED THIS
@@ -82,7 +83,11 @@ export function effect<T>(...pathsToTrack: PropPath<T>[]) {
 
             const onMount = () => {
                 lastTrackedValues = this[consumerSym].getValue();
-                method.call(this)
+                const result = method.call(this);
+                if (result instanceof ObservableAsync){
+                    lastObservable = result;
+                    this.disposeOnUnmount.push(result);
+                }
             }
             const effect = () => {
                 if (!lastTrackedValues) {
@@ -91,8 +96,13 @@ export function effect<T>(...pathsToTrack: PropPath<T>[]) {
                     if (this[consumerSym].isDirty) {
                         const newTrackedValues: any[] = this[consumerSym].getValue();
                         if (newTrackedValues.some((newValue, i) => lastTrackedValues![i] !== newValue)) {
+                            lastObservable?.controller.abort("Props changed");
                             lastTrackedValues = newTrackedValues;
-                            method.call(this)
+                            const result = method.call(this);
+                            if (result instanceof ObservableAsync){
+                                lastObservable = result;
+                                this.disposeOnUnmount.push(result);
+                            }
                         }
                     }
                 }
